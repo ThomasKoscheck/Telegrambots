@@ -47,7 +47,9 @@ susan = ChatBot("Susan",
 			  
 			  logic_adapters=["chatterbot.logic.MathematicalEvaluation", 
 							  #"chatterbot.logic.TimeLogicAdapter", 
-							  "chatterbot.logic.ClosestMatchAdapter"
+							  {
+								'import_path': 'chatterbot.logic.BestMatch'
+							  }
 							  ],	
 			  filters=["chatterbot.filters.RepetitiveResponseFilter"],			  
 			  database_uri=db_uri,
