@@ -46,7 +46,7 @@ def next_link(s):
         return content_raw, end_content
           
 
-def all_links(page):
+def all_links(page): #fehlerhaft
     links = []
     while True:
         link, end_content = next_link(page)
@@ -54,7 +54,7 @@ def all_links(page):
             break
         else:
             links.append(link)      #Append all the links in the list named 'Links'
-            #time.sleep(0.1)        #Timer could be used to slow down the request for image downloads
+            time.sleep(0.1)        #Timer could be used to slow down the request for image downloads
             page = page[end_content:]
     return links
 
@@ -76,23 +76,24 @@ def download_images(links, search_keyword, chat_id):
 
 
 def search(image, chat_id):
-    
-    #t0 = time.time()   #start the timer
-    search_keyword = image
-    
-    #Download Image Links
-    links = []
-    search_keyword = search_keyword.replace(" ","%20")
-    url = 'https://www.google.com/search?q=' + search_keyword+ '&espv=2&biw=1366&bih=667&site=webhp&source=lnms&tbm=isch&sa=X&ei=XosDVaCXD8TasATItgE&ved=0CAcQ_AUoAg'
-    raw_html =  (get_raw_html(url))
-    links = links + (all_links(raw_html))
-    #print ("Total Image Links = "+str(len(links)))
-    #print ("\n")
+    try:
+        #t0 = time.time()   #start the timer
+        search_keyword = image    
+        #Download Image Links
+        links = []
+        search_keyword = search_keyword.replace(" ","%20")
+        url = 'https://www.google.com/search?q=' + search_keyword+ '&espv=2&biw=1366&bih=667&site=webhp&source=lnms&tbm=isch&sa=X&ei=XosDVaCXD8TasATItgE&ved=0CAcQ_AUoAg'   
+        raw_html =  (get_raw_html(url))
+        links = links + (all_links(raw_html))
+        #print ("Total Image Links = " + str(len(raw_html)))
+        #print ("\n")
+        file_extension = download_images(raw_html, search_keyword, chat_id)
+        #t1 = time.time()    #stop the timer
+        #total_time = t1-t0   #Calculating the total time required to crawl
+        #print("Total time taken: "+str(total_time)+" Seconds")
+        #print str(file_extension)
+        return file_extension
 
-    file_extension = download_images(links, search_keyword, chat_id)
-
-    #t1 = time.time()    #stop the timer
-    #total_time = t1-t0   #Calculating the total time required to crawl
-    #print("Total time taken: "+str(total_time)+" Seconds")
-    return file_extension
+    except Exception as e:
+        print str(e)
 
