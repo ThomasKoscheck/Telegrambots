@@ -108,11 +108,10 @@ def findActionWord(input, username):
 
 			#Bilder schicken			
 			count2 = 0													
-			while count2 < len(Bilder):
-				bot.sendMessage(chat_id, str("An diesem Feature wird gerade gearbeitet, schau doch am besten in ein paar Tagen wieder vorbei"))
-				break
+			while count2 < len(Bilder):				
 				if Bilder[count2] in str(input.lower()): #überprüft ob Aktionswörter von Bilder[] vorhanden sind	
-														
+					bot.sendMessage(chat_id, str("An diesem Feature wird gerade gearbeitet, schau doch am besten in ein paar Tagen wieder vorbei"))
+					break									
 					index, pronomen = findePronomen(input)					
 					filetype = imagescraper.search((input[index:]).encode('utf-8'), chat_id)    #Auruf imagescraper.py und Übergabe des Suchwortes		
 					sendFoto(filetype)
