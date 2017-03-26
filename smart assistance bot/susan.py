@@ -92,8 +92,8 @@ def sendFoto(filetype):
 
 	else:
 		try:
-			bot.sendPhoto(chat_id, open('tmp/'  + str(chat_id) + '/image.' + str(filetype)))
-			#os.system('rm -r tmp/' + str(chat_id))	
+			bot.sendPhoto(chat_id, open('tmp/'  + str(chat_id) + '/image.jpg'))
+			os.system('rm -r tmp/' + str(chat_id))	
 
 		except:        
 			bot.sendMessage(chat_id, 'Hmm, da habe ich nichts gefunden. Zum Trost ein Bild von einer Katze.')
@@ -109,12 +109,10 @@ def findActionWord(input, username):
 			#Bilder schicken			
 			count2 = 0													
 			while count2 < len(Bilder):				
-				if Bilder[count2] in str(input.lower()): #überprüft ob Aktionswörter von Bilder[] vorhanden sind	
-					bot.sendMessage(chat_id, str("An diesem Feature wird gerade gearbeitet, schau doch am besten in ein paar Tagen wieder vorbei"))
-					break									
+				if Bilder[count2] in str(input.lower()): #überprüft ob Aktionswörter von Bilder[] vorhanden sind								
 					index, pronomen = findePronomen(input)					
-					filetype = imagescraper.search((input[index:]).encode('utf-8'), chat_id)    #Auruf imagescraper.py und Übergabe des Suchwortes		
-					sendFoto(filetype)
+					imagescraper.search((input[index:]).encode('utf-8'), chat_id)    #Auruf imagescraper.py und Übergabe des Suchwortes		
+					sendFoto('jpg')
 					bot.sendMessage(chat_id, str("Hier, ein Bild " + pronomen + "'" + input[index:].encode('utf-8') + "'"))	
 					return True																														
 																											
