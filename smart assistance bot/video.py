@@ -3,7 +3,7 @@
 
 from googleapiclient.discovery import build
 
-YOUTUBE_DEV_KEY = 'your_API_KEY'
+YOUTUBE_DEV_KEY = 'your_dev_key'
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
