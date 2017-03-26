@@ -199,6 +199,7 @@ def handle(msg):
 	sys.setdefaultencoding("utf-8")
 
 	try:
+		global chat_id
 		chat_id = msg['chat']['id']
 		firstname = msg['from']['first_name'].encode('utf8')
 		username = msg['from']['username'].encode('utf8')
