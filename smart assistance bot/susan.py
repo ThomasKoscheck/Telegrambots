@@ -19,10 +19,10 @@ import video  #returns videos
 codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else None) #utf8mb4 activate
 
 #insert valid database URI here
-db_uri="your_database_uri"
+db_uri="mongodb://your_mongodatabase_uri_here"
 
 #insert database name here
-db_name="your_database_name"
+db_name="your_mongodatabase_name_here
 
 #used for special actions
 Zeige = ['zeige', 'zeig', 'schicke', 'schick','sende', 'schreibe', 'schreib']
@@ -53,7 +53,7 @@ susan = ChatBot("Susan",
 susan.train("chatterbot.corpus.german")
 
 #checks if user is already registered
-def usercheck():
+def userCheck(chat_id):
 	#path and name of the disclaimer
 	datafile = file('disclaimer.txt')	
 
@@ -65,6 +65,19 @@ def usercheck():
 
 def findWholeWord(w):
 	return re.compile(r'\b({0})\b'.format(w), flags=re.IGNORECASE).search
+
+# function to save log messages to specified log file/print it to terminal
+def log(message, path, terminal = False):
+	# open the specified log file
+	file = open(path,"a")
+	# write log message with timestamp to log file
+	file.write(message)
+	# close log file
+	file.close
+		
+	#output in terminal (for debugging)
+	if terminal == True:
+		print str(message)
 
 #downloads photo into the specific chat_id-folder after creating it, sending photo and deleting the folder afterwards
 def sendFoto(filetype):
@@ -80,13 +93,11 @@ def sendFoto(filetype):
 	else:
 		try:
 			bot.sendPhoto(chat_id, open('tmp/'  + str(chat_id) + '/image.' + str(filetype)))
-			os.system('rm -r tmp/' + str(chat_id))	
+			#os.system('rm -r tmp/' + str(chat_id))	
 
 		except:        
 			bot.sendMessage(chat_id, 'Hmm, da habe ich nichts gefunden. Zum Trost ein Bild von einer Katze.')
 			bot.sendPhoto(chat_id, open('tmp/katze.jpg'))
-
-
 
 #finding actionword
 def findActionWord(input, username):
@@ -95,14 +106,15 @@ def findActionWord(input, username):
 	while count < len(Zeige):
 		if Zeige[count] in str(input.lower()): #Überprüft ob Aktionswörter von Zeige[] vorhanden sind
 
-			#Bilder schicken
+			#Bilder schicken			
 			count2 = 0													
 			while count2 < len(Bilder):
+				bot.sendMessage(chat_id, str("An diesem Feature wird gerade gearbeitet, schau doch am besten in ein paar Tagen wieder vorbei"))
+				break
 				if Bilder[count2] in str(input.lower()): #überprüft ob Aktionswörter von Bilder[] vorhanden sind	
 														
-					index, pronomen = findePronomen(input)
-
-					filetype = imagescraper.search((input[index:]).encode('utf-8'), chat_id)    #Auruf imagescraper.py und Übergabe des Suchwortes
+					index, pronomen = findePronomen(input)					
+					filetype = imagescraper.search((input[index:]).encode('utf-8'), chat_id)    #Auruf imagescraper.py und Übergabe des Suchwortes		
 					sendFoto(filetype)
 					bot.sendMessage(chat_id, str("Hier, ein Bild " + pronomen + "'" + input[index:].encode('utf-8') + "'"))	
 					return True																														
@@ -118,7 +130,7 @@ def findActionWord(input, username):
 					
 					giphy.downloadGif(input[index:].encode('utf-8'), chat_id)
 					sendFoto('gif')
-					bot.sendMessage(chat_id, str("Hier, ein GIF " + pronomen + "'" + input[index:].encode('utf-8') + "'"))
+					bot.sendMessage(chat_id, str("Hier, ein GIF " + pronomen + "'" + input[index:].encode('utf-8') + "'"))	
 					return True			
 
 				count2 += 1	
@@ -148,7 +160,7 @@ def findActionWord(input, username):
 		if translation == input[index:].encode('utf-8'): #es wurde deutsch auf deutsch übersetzt, also keine übersetzung angefordert
 			return False
 		else:				
-			bot.sendMessage(chat_id, str("'" + input[index:].encode('utf-8') + "' bedeutet: " + translation))	
+			bot.sendMessage(chat_id, str("'" + input[index:].encode('utf-8') + "' bedeutet: " + translation))
 			return True	
 
 	if Translate[1] in str(input.lower()): #überprüft ob Aktionswörter von Translate[] vorhanden sind								
@@ -164,7 +176,6 @@ def findActionWord(input, username):
 
 #finding and returning Pronomen 
 def findePronomen(input):
-
 	if findWholeWord('einem')(input.lower()):  #checks for 'Zeige mir Bilder von einem Hund'		
 		index = input.find('einem') + 6
 		return index, 'von einem '		
@@ -181,7 +192,6 @@ def findePronomen(input):
 	elif findWholeWord('vom')(input.lower()):   #checks for 'Bilder vom Matterhorn' 									 
 		index = input.find('vom') + 4
 		return index, 'vom '
-
 	
 #Main loop
 def handle(msg):
@@ -189,7 +199,6 @@ def handle(msg):
 	sys.setdefaultencoding("utf-8")
 
 	try:
-		global chat_id 
 		chat_id = msg['chat']['id']
 		firstname = msg['from']['first_name'].encode('utf8')
 		username = msg['from']['username'].encode('utf8')
@@ -204,14 +213,15 @@ def handle(msg):
 					bot.sendMessage(chat_id, str('Hi, ich bin Susan. Ich bin nicht so ganz ein Mensch wie du, aber ich versuche, so menschlich wie möglich zu sein. Dazu verwende ich Machine-Learnig.' + 
 											 ' Ich werde anfangs sicher ein paar Fehler machen, bitte verzeihe mir, aber ich bin noch klein und muss zuerst ganz viel lernen.'))
 					bot.sendMessage(chat_id, str('Du kannst mir aber dabei helfen, in dem du mit mir schreibst und dich nicht über meine Fehler ärgerst. Dankeschön' ))
+					bot.sendMessage(chat_id, str('Dir gefällt dieser Bot? Dann bewerte mich doch bitte hier mit 5 Sternen: https://telegram.me/storebot?start=suusanbot'))
 
 				#command: /credits
 				elif input == '/credits':
-					bot.sendMessage(chat_id, str('Machine Learning/Conversational engine: Chatterbot (https://github.com/gunthercox/ChatterBot)'))
-					bot.sendMessage(chat_id, str('Telegrambot API: Telepot (https://github.com/nickoala/telepot)'))
-					bot.sendMessage(chat_id, str("GIF's: giphypop (https://github.com/shaunduncan/giphypop)"))
-					bot.sendMessage(chat_id, str('Translation: Google translate (https://github.com/MrS0m30n3/google-translate)'))
-					bot.sendMessage(chat_id, str('Der Rest: @ThomasKoscheck (https://github.com/ThomasKoscheck)')) 
+					bot.sendMessage(chat_id, str('Machine Learning/Conversational engine:\nChatterbot (https://github.com/gunthercox/ChatterBot)'))
+					bot.sendMessage(chat_id, str('Telegrambot API:\nTelepot (https://github.com/nickoala/telepot)'))
+					bot.sendMessage(chat_id, str("GIF's:\ngiphypop (https://github.com/shaunduncan/giphypop)"))
+					bot.sendMessage(chat_id, str('Translation:\nGoogle translate (https://github.com/MrS0m30n3/google-translate)'))
+					bot.sendMessage(chat_id, str('Integration und Rest:\n@ThomasKoscheck (https://github.com/ThomasKoscheck)')) 
 
 				#command: /knowledge
 				elif input == '/knowledge':
@@ -223,19 +233,19 @@ def handle(msg):
 
 				#command: /akzeptieren
 				elif input == '/akzeptieren':
-					if usercheck(): #user already in database
+					if userCheck(chat_id): #user already in database
 						bot.sendMessage(chat_id, str('Du hast den Haftungsausschluss bereits akzeptiert'))
 					else:
 						bot.sendMessage(chat_id, str('Du hast den Haftungsausschluss akzeptiert. Hier kannst Du ihn dir in Ruhe durchlesen: http://www.thomaskoscheck.tk/blog/projekte/susan/haftungsausschluss.html'))
-						log(str(chat_id) + ', ' + firstname + ', ' + username + '\n', disclaimer)
+						log(str(chat_id) + ', ' + firstname + ', ' + username + '\n', disclaimer, terminal=False)
 
-		elif usercheck():	
+		elif userCheck(chat_id):	
 			
 			action = findActionWord(input, username)     #checks if specialaction was accomplished
 			
 			if action == False:		#no special action was accomplished, telegrambot should answer conversational now
 				response = susan.get_response(input)
-			
+	
 				#sending response in telegram
 				bot.sendMessage(chat_id, unicode(response).encode("utf-8"))
 
@@ -249,7 +259,7 @@ def handle(msg):
 		print 'Fehler bei: ' + input 
 		print 'Error: ' + str(e)
 
-bot = telepot.Bot('your_bot_key')
+bot = telepot.Bot('your_telegram_bot_id_here')
 bot.setWebhook()
 bot.message_loop(handle)
 
@@ -257,4 +267,3 @@ print 'I am listening ...'
 
 while 1:
 	time.sleep(10)
-
