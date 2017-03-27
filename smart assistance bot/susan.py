@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from chatterbot import ChatBot
-import logging
 import telepot
+from telepot.delegate import per_chat_id, create_open, pave_event_space
+import logging
 import time
 import codecs
 import sys
@@ -17,6 +18,9 @@ import translate    #translates into german
 import video  #returns videos
 
 codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else None) #utf8mb4 activate
+
+#chat is active
+is_chatting = False
 
 #insert valid database URI here
 db_uri="mongodb://your_mongodatabase_uri_here"
@@ -191,77 +195,104 @@ def findePronomen(input):
 		return index, 'vom '
 	
 #Main loop
-def handle(msg):
-	reload(sys)
-	sys.setdefaultencoding("utf-8")
+class ChatHandler(telepot.helper.ChatHandler):
+    def __init__(self, *args, **kwargs):
+        super(ChatHandler, self).__init__(*args, **kwargs)
+			      
+    def on_chat_message(self, msg):
+		content_type, chat_type, chat_id = telepot.glance(msg)
+		reload(sys)
+		sys.setdefaultencoding("utf-8")
+		global is_chatting
 
-	try:
-		global chat_id
-		chat_id = msg['chat']['id']
-		firstname = msg['from']['first_name'].encode('utf8')
-		username = msg['from']['username'].encode('utf8')
-		input = msg['text'].encode("utf-8")
+		try:
+			firstname = msg['from']['first_name'].encode('utf8')
+			username = msg['from']['username'].encode('utf8')
+			group_name = msg['chat']['title']
+			input = msg['text'].encode("utf-8").split('@')[0]	#.split liefert eine Liste, deshalb [0] für den ersten teil
 		
-		if chat_id == 171732153:
-			bot.sendMessage(chat_id, str('Du wurdest wegen eines Fehlverhaltens gebannt.'))
-
-		elif input.startswith('/'):
-				#command: /start (shown to all users if they start a new conversation)
-				if input == '/help' or input == '/start':
-					bot.sendMessage(chat_id, str('Hi, ich bin Susan. Ich bin nicht so ganz ein Mensch wie du, aber ich versuche, so menschlich wie möglich zu sein. Dazu verwende ich Machine-Learnig.' + 
+			#command: /start (shown to all users if they start a new conversation)
+			if input == '/help' or input == '/start':
+				self.sender.sendMessage(str('Hi, ich bin Katzenbot.'))	
+				self.sender.sendMessage(str('Hi, ich bin Susan. Ich bin nicht so ganz ein Mensch wie du, aber ich versuche, so menschlich wie möglich zu sein. Dazu verwende ich Machine-Learnig.' + 
 											 ' Ich werde anfangs sicher ein paar Fehler machen, bitte verzeihe mir, aber ich bin noch klein und muss zuerst ganz viel lernen.'))
-					bot.sendMessage(chat_id, str('Du kannst mir aber dabei helfen, in dem du mit mir schreibst und dich nicht über meine Fehler ärgerst. Dankeschön' ))
-					bot.sendMessage(chat_id, str('Dir gefällt dieser Bot? Dann bewerte mich doch bitte hier mit 5 Sternen: https://telegram.me/storebot?start=suusanbot'))
-
-				#command: /credits
-				elif input == '/credits':
-					bot.sendMessage(chat_id, str('Machine Learning/Conversational engine:\nChatterbot (https://github.com/gunthercox/ChatterBot)'))
-					bot.sendMessage(chat_id, str('Telegrambot API:\nTelepot (https://github.com/nickoala/telepot)'))
-					bot.sendMessage(chat_id, str("GIF's:\ngiphypop (https://github.com/shaunduncan/giphypop)"))
-					bot.sendMessage(chat_id, str('Translation:\nGoogle translate (https://github.com/MrS0m30n3/google-translate)'))
-					bot.sendMessage(chat_id, str('Integration und Rest:\n@ThomasKoscheck (https://github.com/ThomasKoscheck)')) 
+				self.sender.sendMessage(str('Du kannst mir aber dabei helfen, in dem du mit mir schreibst und dich nicht über meine Fehler ärgerst. Dankeschön' ))
+				self.sender.sendMessage(str('Dir gefällt dieser Bot? Dann bewerte mich doch bitte hier mit 5 Sternen: https://telegram.me/storebot?start=suusanbot'))
+				log(message='/help' + ' from ' + username + '\n', path=logfile, terminal=False)
+				
+			#command: /credits
+			elif input == '/credits':
+				self.sender.sendMessage(str('Machine Learning/Conversational engine:\nChatterbot (https://github.com/gunthercox/ChatterBot)'))
+				self.sender.sendMessage(str('Telegrambot API:\nTelepot (https://github.com/nickoala/telepot)'))
+				self.sender.sendMessage(str("GIF's:\ngiphypop (https://github.com/shaunduncan/giphypop)"))
+				self.sender.sendMessage(str('Translation:\nGoogle translate (https://github.com/MrS0m30n3/google-translate)'))
+				self.sender.sendMessage(str('Bilder:\nGoogle Bilder (https://github.com/hardikvasa/google-images-download/blob/master/google-images-download.py)'))'
+				self.sender.sendMessage(str('Der Rest:\n@ThomasKoscheck (https://github.com/ThomasKoscheck/Telegrambots)'))
+				log(message='/credits' + ' from ' + username + '\n', path=logfile, terminal=False)   
 
 				#command: /knowledge
-				elif input == '/knowledge':
-					bot.sendMessage(chat_id, str("Konversation: Ich kann ausgehend von Deinem Input eine (meist) sinnvolle Antwort geben."))
-					bot.sendMessage(chat_id, str("Bilder: Wenn du mich nach Bilder fragst, kann ich dir ausgehend von der Google-Bildersuche ein Bild schicken. (z.B: 'Zeige mir ein Bild von Katzen')"))
-					bot.sendMessage(chat_id, str("Videos: Wenn du mich nach Videos fragst, kann ich dir ausgehend von der YouTubesuche ein Video schicken. (z.B: 'Zeige mir ein Video von Julien Bam')"))
-					bot.sendMessage(chat_id, str("GIF's: Wenn du mich nach GIF'S fragst, kann ich dir ausgehend von der Datenbank giphy.com ein GIF schicken. (z.B: 'Zeige mir ein GIF von Star Wars')"))
-					bot.sendMessage(chat_id, str("Übersetzungen: Ich kann dir jede Sprache nach Deutsch übersetzen (z.B: Was bedeutet Hi, I am a cat)"))
+			elif input == '/knowledge':
+				self.sender.sendMessage(str("Konversation: Ich kann ausgehend von Deinem Input eine (meist) sinnvolle Antwort geben."))
+				self.sender.sendMessage(str("Bilder: Wenn du mich nach Bilder fragst, kann ich dir ausgehend von der Google-Bildersuche ein Bild schicken. (z.B: 'Zeige mir ein Bild von Katzen')"))
+				self.sender.sendMessage(str("Videos: Wenn du mich nach Videos fragst, kann ich dir ausgehend von der YouTubesuche ein Video schicken. (z.B: 'Zeige mir ein Video von Julien Bam')"))
+				self.sender.sendMessage(str("GIF's: Wenn du mich nach GIF'S fragst, kann ich dir ausgehend von der Datenbank giphy.com ein GIF schicken. (z.B: 'Zeige mir ein GIF von Star Wars')"))			
+				log(message='/knowledge' + ' from ' + username + ' \n', path=logfile, terminal=False)
 
 				#command: /akzeptieren
-				elif input == '/akzeptieren':
-					if userCheck(chat_id): #user already in database
-						bot.sendMessage(chat_id, str('Du hast den Haftungsausschluss bereits akzeptiert'))
-					else:
-						bot.sendMessage(chat_id, str('Du hast den Haftungsausschluss akzeptiert. Hier kannst Du ihn dir in Ruhe durchlesen: http://www.thomaskoscheck.tk/blog/projekte/susan/haftungsausschluss.html'))
-						log(str(chat_id) + ', ' + firstname + ', ' + username + '\n', disclaimer, terminal=False)
-
-		elif userCheck(chat_id):	
+			elif input == '/akzeptieren':
+				if userCheck(chat_id): #user already in database
+					self.sender.sendMessage(str('Du hast den Haftungsausschluss bereits akzeptiert'))
+				else:
+					self.sender.sendMessage(str('Du hast den Haftungsausschluss akzeptiert. Hier kannst Du ihn dir in Ruhe durchlesen: http://www.thomaskoscheck.tk/blog/projekte/susan/haftungsausschluss.html'))
+					log(str(chat_id) + ', ' + firstname + ', ' + username + '\n', disclaimer)
 			
-			action = findActionWord(input, username)     #checks if specialaction was accomplished
+			#command: /chat
+			elif input == '/chat':
+				is_chatting = True
+				self.sender.sendMessage(str('Chatfunktion aktiviert. Deaktivieren mit /stopchat'))
+				time.sleep(2)
+				self.sender.sendMessage(str('Hallo ') + firstname +  str(', fantastisch etwas von dir zu lesen!'))
+
+			#command: /stopchat
+			elif input == '/stopchat':
+				is_chatting = False
+				self.sender.sendMessage(str('Bis bald ') + firstname + str(' !'))		
+
+			#Chatfunktion
+			elif not input.startswith('/') and userCheck(chat_id) and is_chatting:	#kein Kommando, benutzer ist registiert und is_chatting ist true (/chat wurde ausgeführt)						
+				action = findActionWord(input, username)     #checks if specialaction was accomplished
 			
-			if action == False:		#no special action was accomplished, telegrambot should answer conversational now
-				response = susan.get_response(input)
-	
-				#sending response in telegram
-				bot.sendMessage(chat_id, unicode(response).encode("utf-8"))
+				if action == False:		#no special action was accomplished, telegrambot should answer conversational now
+					response = susan.get_response(input)
 
-		else:
-			bot.sendMessage(chat_id, str('Du bist leider kein registrierter Benutzer!'))
-			bot.sendMessage(chat_id, str('Den Haftungsausschluss kannst du mit /akzeptieren annehmen.'))
+					#logging of input, response and user
+					log(message='input: ' + input + ' from ' + username + '\n', path=logfile, terminal=True)    #named arguments
+					log(message='response: ' + unicode(response).encode("utf-8") + '\n', path=logfile, terminal=True)		
+
+					#sending response in telegram
+					self.sender.sendMessage(unicode(response).encode("utf-8"))
+
+			#Vergessene Chatfunktion
+			elif not input.startswith('/') and userCheck(chat_id) and is_chatting == False:	#kein Kommando, benutzer ist registiert und is_chatting ist false (/chat wurde NICHT ausgeführt)
+				self.sender.sendMessage(str('Wenn du die Chatfunktion aktivieren willst, benutze /chat!'))
+
+			#Benutzer nicht registiert
+			elif userCheck(chat_id) == False:
+				self.sender.sendMessage(str('Du bist leider kein registrierter Benutzer!'))
+				self.sender.sendMessage(str('Den Haftungsausschluss kannst du mit /akzeptieren annehmen.'))
 			
-	except Exception as e:
-		#if any error accured in the try-block
-		bot.sendMessage(chat_id, str("Hoppla, da ist ein Fehler aufgetreten. Verzeih mir und mach einfach weiter :)"))
-		print 'Fehler bei: ' + input 
-		print 'Error: ' + str(e)
+		except Exception as e:
+			#if any error accured in the try-block
+			self.sender.sendMessage(str("Es ist nicht deine Schuld. \nAber wir haben einen Problem."))
+			print 'Fehler bei: ' + input
+			print 'Error: ' + str(e)	
 
-bot = telepot.Bot('your_telegram_bot_id_here')
-bot.setWebhook()
-bot.message_loop(handle)
 
-print 'I am listening ...'
+TOKEN = 'your_telegram_bot_id_here'
 
-while 1:
-	time.sleep(10)
+bot = telepot.DelegatorBot(TOKEN, [
+    pave_event_space()(
+        per_chat_id(), create_open, ChatHandler, timeout=30
+    ),
+])
+
