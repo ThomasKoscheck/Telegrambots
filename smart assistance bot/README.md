@@ -1,5 +1,5 @@
 ## Smart assistance bot
-This is a machine learning conversational bot with some additional features of an assistance bot.
+This is a machine learning conversational bot for Telegram with some additional features of an assistance bot.
 <br>
 
 ### Project information:
