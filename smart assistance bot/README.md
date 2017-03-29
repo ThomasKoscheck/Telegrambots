@@ -13,7 +13,7 @@ This is a machine learning conversational bot for Telegram with some additional 
 |[YouTube Videos](https://github.com/reyasis/download-top40)| Easy way to from YouTube |[MIT](https://github.com/hardikvasa/google-images-download/blob/master/Licence.txt)|
 
 <br>
-A working example of this bot can you find [here](http://telegram.me/suusanbot)
+A working example of this bot can you find here: http://www.telegram.me/suusanbot
 
 
 
