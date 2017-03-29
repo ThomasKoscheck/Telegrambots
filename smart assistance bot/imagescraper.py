@@ -1,5 +1,6 @@
 #Searching and Downloading Google Images/Image Links
-#https://github.com/hardikvasa/google-images-download/blob/master/google-images-download.py
+#original code from https://github.com/hardikvasa/google-images-download/blob/master/google-images-download.py
+#follwing code contains changes for my telegrambot
 import sys  
 import time
 import urllib2
@@ -113,7 +114,7 @@ def search(image, chat_id):
 		if not os.path.isdir(directory):
 			os.makedirs(directory)
 
-		output_file = open(directory + 'image'+".jpg",'wb')
+		output_file = open(directory + '/image.jpg','wb')
 		data = response.read()
 		output_file.write(data)
 		response.close();
