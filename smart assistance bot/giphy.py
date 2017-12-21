@@ -1,4 +1,4 @@
-#https://github.com/shaunduncan/giphypop
+# https://github.com/shaunduncan/giphypop
 
 from giphypop import translate
 import urllib

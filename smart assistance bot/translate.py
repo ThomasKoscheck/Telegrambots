@@ -1,4 +1,4 @@
-#https://github.com/MrS0m30n3/google-translate
+# https://github.com/MrS0m30n3/google-translate
 import google_translate
 
 def translate(query):
