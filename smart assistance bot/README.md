@@ -11,6 +11,8 @@ This is a machine learning conversational bot for Telegram with some additional 
 |[Google Images](https://github.com/hardikvasa/google-images-download)| Script for 'searching' and 'downloading' Google images |[MIT](https://github.com/hardikvasa/google-images-download/blob/master/Licence.txt)|
 |[Google Translate](https://github.com/MrS0m30n3/google-translate)| Small library to translate text for free using Google translate |[Unlicense](https://github.com/MrS0m30n3/google-translate/blob/master/LICENSE)|
 |[YouTube Videos](https://github.com/reyasis/download-top40)| Easy way to from YouTube |[MIT](https://github.com/hardikvasa/google-images-download/blob/master/Licence.txt)|
+| [FacePlusPlus](https://github.com/FacePlusPlus/python-sdk)|Face detection and analysis|No Licens given|
+
 
 <br>
 A working example of this bot can you find here: http://www.telegram.me/suusanbot

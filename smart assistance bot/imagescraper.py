@@ -109,7 +109,11 @@ def search(image, chat_id):
 		response = urlopen(req)
 
 		#specific directory for download
+<<<<<<< HEAD
 		directory = '/var/www/telegrambot/susan/tmp/' + str(chat_id)
+=======
+		directory = 'tmp/' + str(chat_id)
+>>>>>>> 92254d8ce567ce3054c6600d5c9e05debafe6b28
 		if not os.path.isdir(directory):
 			os.makedirs(directory)
 			print "Success"

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+#Face++ - wwwfaceplusplus.com
+>>>>>>> 92254d8ce567ce3054c6600d5c9e05debafe6b28
 # -*- coding: utf-8 -*-
 import requests
 import urllib2
@@ -11,7 +15,11 @@ secret = "API-Secret"
 
 def getdetails(chat_id, imagepath):
 
+<<<<<<< HEAD
     # open image send to susan (currently in /tmp)
+=======
+    #open image send to susan (currently in /tmp)
+>>>>>>> 92254d8ce567ce3054c6600d5c9e05debafe6b28
     image = open(imagepath,'rb').read()
 
     files = {
@@ -26,6 +34,7 @@ def getdetails(chat_id, imagepath):
     }
 
     try: 
+<<<<<<< HEAD
         # send request to faceplusplus api
         result = requests.post('https://api-us.faceplusplus.com/facepp/v3/detect', params=payload, files=files).json()  
 
@@ -49,9 +58,25 @@ def getdetails(chat_id, imagepath):
         os.system('rm -r tmp/' + str(chat_id) + '.jpg')	
 
         # return facedetails
+=======
+        #send request to faceplusplus api
+        result = requests.post('https://api-us.faceplusplus.com/facepp/v3/detect', params=payload, files=files).json()  
+
+        #get unequivocal name (image id) from faceplusplus
+        imageid= result[u'image_id']
+       
+        # delete /tmp file
+        os.system('rm -r tmp/' + str(chat_id) + '.jpg')	
+
+        #return facedetails
+>>>>>>> 92254d8ce567ce3054c6600d5c9e05debafe6b28
         return result
 
     except urllib2.HTTPError as e:
         print e.read()
 
 
+<<<<<<< HEAD
+=======
+    
+>>>>>>> 92254d8ce567ce3054c6600d5c9e05debafe6b28
