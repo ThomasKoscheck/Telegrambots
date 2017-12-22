@@ -1,30 +1,28 @@
-#Searching and Downloading Google Images/Image Links
-#https://github.com/hardikvasa/google-images-download/blob/master/google-images-download.py
+# Searching and Downloading Google Images/Image Links
+# https://github.com/hardikvasa/google-images-download/blob/master/google-images-download.py
 import sys  
 import time
 import urllib2
 import os
 
-
 ########### Edit From Here ###########
 
-#This list is used to search keywords. You can edit this list to search for google images of your choice. You can simply add and remove elements of the list.
+# This list is used to search keywords. You can edit this list to search for google images of your choice. You can simply add and remove elements of the list.
 search_keyword = []
 
-#This list is used to further add suffix to your search term. Each element of the list will help you download 100 images. First element is blank which denotes that no suffix is added to the search keyword of the above list. You can edit the list by adding/deleting elements from it.So if the first element of the search_keyword is 'Australia' and the second element of keywords is 'high resolution', then it will search for 'Australia High Resolution'
+# This list is used to further add suffix to your search term. Each element of the list will help you download 100 images. First element is blank which denotes that no suffix is added to the search keyword of the above list. You can edit the list by adding/deleting elements from it.So if the first element of the search_keyword is 'Australia' and the second element of keywords is 'high resolution', then it will search for 'Australia High Resolution'
 keywords = []
 
 ########### End of Editing ###########
 
 
 
-
-#Downloading entire Web Document (Raw Page Content)
+# Downloading entire Web Document (Raw Page Content)
 def download_page(url):
     version = (3,0)
     cur_version = sys.version_info
-    if cur_version >= version:     #If the Current Version of Python is 3.0 or above
-        import urllib.request    #urllib library for Extracting web pages
+    if cur_version >= version:     # If the Current Version of Python is 3.0 or above
+        import urllib.request    # urllib library for Extracting web pages
         try:
             headers = {}
             headers['User-Agent'] = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36"
@@ -34,7 +32,7 @@ def download_page(url):
             return respData
         except Exception as e:
             print(str(e))
-    else:                        #If the Current Version of Python is 2.x
+    else:                        # If the Current Version of Python is 2.x
         import urllib2
         try:
             headers = {}
@@ -47,10 +45,10 @@ def download_page(url):
             return"Page Not found"
 
 
-#Finding 'Next Image' from the given raw page
+ #Finding 'Next Image' from the given raw page
 def _images_get_next_item(s):
     start_line = s.find('rg_di')
-    if start_line == -1:    #If no links are found then give an error!
+    if start_line == -1:    # If no links are found then give an error!
         end_quote = 0
         link = "no_links"
         return link, end_quote
@@ -62,7 +60,7 @@ def _images_get_next_item(s):
         return content_raw, end_content
 
 
-#Getting all links with the help of '_images_get_next_image'
+ #Getting all links with the help of '_images_get_next_image'
 def _images_get_all_items(page):
     items = []
     while True:
@@ -70,8 +68,8 @@ def _images_get_all_items(page):
         if item == "no_links":
             break
         else:
-            items.append(item)      #Append all the links in the list named 'Links'
-            time.sleep(0.1)        #Timer could be used to slow down the request for image downloads
+            items.append(item)      # Append all the links in the list named 'Links'
+            time.sleep(0.1)        # Timer could be used to slow down the request for image downloads
             page = page[end_content:]
     return items
 
@@ -108,29 +106,25 @@ def search(image, chat_id):
 		req = Request(items[k], headers={"User-Agent": "Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.27 Safari/537.17"})
 		response = urlopen(req)
 
-		#specific directory for download
-<<<<<<< HEAD
+		# specific directory for download
 		directory = '/var/www/telegrambot/susan/tmp/' + str(chat_id)
-=======
 		directory = 'tmp/' + str(chat_id)
->>>>>>> 92254d8ce567ce3054c6600d5c9e05debafe6b28
 		if not os.path.isdir(directory):
 			os.makedirs(directory)
 			print "Success"
 
-		#print str(directory)
 		output_file = open(directory + '/image.jpg','wb')
 		data = response.read()
 		output_file.write(data)
 		response.close();
 		k=k+1;
 
-	except IOError:   #If there is any IOError
+	except IOError:   # If there is any IOError
 		errorCount+=1
 		print("IOError on image "+str(k+1))
 		k=k+1;
 
-	except HTTPError as e:  #If there is any HTTPError
+	except HTTPError as e:  # If there is any HTTPError
 		errorCount+=1
 		print("HTTPError"+str(k))
 		k=k+1;
